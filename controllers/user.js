@@ -1,9 +1,10 @@
 const { addNewUser, getSingleUserByEmail } = require('../services');
-const { convertDataToToken } = require('../utils');
+const { convertDataToToken, hashPassword, comparePassword } = require('../utils');
 
-const registerUser = (req, res) => {
+const registerUser = async (req, res) => {
   try {
-    const userInfo = addNewUser(req.body);
+    const hashedPassword = hashPassword(req.body.password);
+    const userInfo = await addNewUser({ ...req.body, password: hashedPassword });
     res
       .status(201)
       .json({ status: 'success', message: 'Registration successful.', data: userInfo });
@@ -12,14 +13,15 @@ const registerUser = (req, res) => {
   }
 };
 
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = getSingleUserByEmail(email);
+    const user = await getSingleUserByEmail(email);
 
-    if (user && user.password === password) {
+    if (user && comparePassword(password, user.password)) {
+      delete user.password;
       // added username
-      const token = convertDataToToken({ email, username: user.username, isAdmin: user.isAdmin });
+      const token = convertDataToToken({ email, id: user.id, isAdmin: user.isAdmin });
       return res.status(200).json({ status: 'success', message: 'Login successful.', data: { token, user } });
     }
     return res.status(401).json({ status: 'fail', message: 'Invalid login details' });

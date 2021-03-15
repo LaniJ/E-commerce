@@ -13,9 +13,9 @@ const validateProductName = (req, res, next) => {
   }
 };
 
-const checkIfProductExists = (req, res, next) => {
+const checkIfProductExists = async (req, res, next) => {
   try {
-    const selectedProduct = getSingleProduct(req.params.productId);
+    const selectedProduct = await getSingleProduct(req.params.productId);
     if (selectedProduct) {
       return next();
     }

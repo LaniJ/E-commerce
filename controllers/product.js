@@ -7,9 +7,9 @@ const {
   getAllProductsForSingleUser,
 } = require('../services');
 
-const createProduct = (req, res) => {
+const createProduct = async (req, res) => {
   try {
-    const product = addNewProduct(req.body, req.user.email, req.user.username);
+    const product = await addNewProduct(req.body, req.user.email, req.user.username);
     res
       .status(201)
       .json({
@@ -22,20 +22,20 @@ const createProduct = (req, res) => {
   }
 };
 
-const editProduct = (req, res) => {
+const editProduct = async (req, res) => {
   try {
-    const newProduct = updateProduct(req.body, req.params.productId);
+    const newProduct = await updateProduct(req.body, req.params.productId);
     // console.log(newProduct);
-    console.log(req.params.productId);
+    // console.log(req.params.productId);
     res
-      .status(201)
+      .status(200)
       .json({ status: 'success', message: 'Product successfully modified now.', data: newProduct });
   } catch (error) {
     res.status(500).json({ status: 'fail', message: 'Something went wrong.' });
   }
 };
 
-const getProduct = (req, res) => {
+const getProduct = async (req, res) => {
   try {
     const currentProduct = getSingleProduct(req.params.productId);
     res
@@ -62,9 +62,9 @@ const getUserProducts = async (req, res) => {
   }
 };
 
-const allProducts = (req, res) => {
+const allProducts = async (req, res) => {
   try {
-    const productList = getAllProducts();
+    const productList = await getAllProducts();
     res.status(200).json({
       status: 'success',
       message: 'All shop products fetched ',
@@ -78,9 +78,9 @@ const allProducts = (req, res) => {
   }
 };
 
-const deleteSelectedProduct = (req, res) => {
+const deleteSelectedProduct = async (req, res) => {
   try {
-    deleteProduct(req.params.productId);
+    await deleteProduct(req.params.productId);
     res.status(200).json({ status: 'success', message: 'Product deleted ' });
   } catch (error) {
     res.status(500).json({ status: 'fail', message: 'Something went wrong.' });
